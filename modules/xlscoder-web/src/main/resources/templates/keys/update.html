@@ -8,7 +8,7 @@
 <body>
 
 <div class="container">
-    <h2 th:text="${key.id != null ? 'Update account information' : 'Register a new key pair'}">Register account</h2>
+    <h2 th:text="${key.id != null ? 'Update account information' : 'Register a new key block'}">Register account</h2>
 
     <div th:if="${error != null}" th:text="${error}" class="alert alert-danger" role="alert"></div>
     <div th:if="${message != null}" th:text="${message}" class="alert alert-success" role="alert"></div>
@@ -44,6 +44,18 @@
             <label for="publicKey">Public</label>
             <textarea type="text" class="form-control" th:classappend="${#fields.hasErrors('publicKey')} ? 'is-invalid' : ''" id="publicKey" th:field="*{publicKey}"></textarea>
             <div th:if="${#fields.hasErrors('publicKey')}" class="invalid-feedback" th:errors="*{publicKey}">Incorrect value</div>
+        </div>
+
+        <div class="form-group">
+            <label for="pgpPrivateKey">PGP Private</label>
+            <textarea type="text" class="form-control" th:classappend="${#fields.hasErrors('pgpPrivateKey')} ? 'is-invalid' : ''" id="pgpPrivateKey" th:field="*{pgpPrivateKey}"></textarea>
+            <div th:if="${#fields.hasErrors('pgpPrivateKey')}" class="invalid-feedback" th:errors="*{pgpPrivateKey}">Incorrect value</div>
+        </div>
+
+        <div class="form-group">
+            <label for="pgpPublicKey">PGP Public</label>
+            <textarea type="text" class="form-control" th:classappend="${#fields.hasErrors('pgpPublicKey')} ? 'is-invalid' : ''" id="pgpPublicKey" th:field="*{pgpPublicKey}"></textarea>
+            <div th:if="${#fields.hasErrors('pgpPublicKey')}" class="invalid-feedback" th:errors="*{pgpPublicKey}">Incorrect value</div>
         </div>
 
         <button type="submit" class="btn btn-primary mb-2">Submit</button>

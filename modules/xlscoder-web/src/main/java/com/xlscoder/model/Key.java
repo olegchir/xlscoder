@@ -32,6 +32,12 @@ public class Key {
     @Column(name = "PublicKey", length = DEFAULT_KEY_LENGTH, nullable = false)
     private String publicKey;
 
+    @Column(name = "PGPPrivateKey", length = DEFAULT_KEY_LENGTH, nullable = false)
+    private String pgpPrivateKey;
+
+    @Column(name = "PGPPublicKey", length = DEFAULT_KEY_LENGTH, nullable = false)
+    private String pgpPublicKey;
+
     public String getShortPrivateKey() {
         return KeyPairHolder.firstNOfKey(privateKey, 50);
     }
@@ -78,5 +84,21 @@ public class Key {
 
     public void setPublicKey(String publicKey) {
         this.publicKey = publicKey;
+    }
+
+    public String getPgpPrivateKey() {
+        return pgpPrivateKey;
+    }
+
+    public void setPgpPrivateKey(String pgpPrivateKey) {
+        this.pgpPrivateKey = pgpPrivateKey;
+    }
+
+    public String getPgpPublicKey() {
+        return pgpPublicKey;
+    }
+
+    public void setPgpPublicKey(String pgpPublicKey) {
+        this.pgpPublicKey = pgpPublicKey;
     }
 }

@@ -1,44 +1,47 @@
 package com.xlscoder.coder;
 
-import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
 public class KeyPairHolder {
+    public static final String BEGIN_RSA_PRIVATE_KEY = "-----BEGIN RSA PRIVATE KEY-----\n";
+    public static final String END_RSA_PRIVATE_KEY = "\n-----END RSA PRIVATE KEY-----\n";
+    public static final String BEGIN_RSA_PUBLIC_KEY = "-----BEGIN RSA PUBLIC KEY-----\n";
+    public static final String END_RSA_PUBLIC_KEY = "\n-----END RSA PUBLIC KEY-----\n";
     private String publicKey;
     private String privateKey;
-    private KeyPair keyPair;
+    private String pgpPrivateKey;
+    private String pgpPublicKey;
 
-    public KeyPairHolder(KeyPair keyPair) {
-        this.keyPair = keyPair;
-        regenerateStrings();
-    }
-
-    private void regenerateStrings() {
-        this.publicKey = encodedToPublicText(keyPair.getPublic().getEncoded());
-        this.privateKey = encodedToPrivateText(keyPair.getPrivate().getEncoded());
+    public KeyPairHolder(byte[] privateSrc, byte[] publicSrc, byte[] pgpPrivateSrc, byte[] pgpPublicSrc) {
+        this.publicKey = encodedToPublicText(publicSrc);
+        this.privateKey = encodedToPrivateText(privateSrc);
+        this.pgpPrivateKey = toBase64String(pgpPrivateSrc);
+        this.pgpPublicKey = toBase64String(pgpPublicSrc);
     }
 
     private String encodedToPrivateText(byte[] src) {
         Base64.Encoder encoder = Base64.getEncoder();
-        String result = "-----BEGIN RSA PRIVATE KEY-----\n";
+        String result = BEGIN_RSA_PRIVATE_KEY;
         result += encoder.encodeToString(src);
-        result += "\n-----END RSA PRIVATE KEY-----\n";
+        result += END_RSA_PRIVATE_KEY;
         return result;
     }
 
     private String encodedToPublicText(byte[] src) {
         Base64.Encoder encoder = Base64.getEncoder();
-        String result = "-----BEGIN RSA PUBLIC KEY-----\n";
+        String result = BEGIN_RSA_PUBLIC_KEY;
         result += encoder.encodeToString(src);
-        result += "\n-----END RSA PUBLIC KEY-----\n";
+        result += END_RSA_PUBLIC_KEY;
         return result;
     }
 
+    private String toBase64String(byte[] src) {
+        return Base64.getEncoder().encodeToString(src);
+    }
+
     public static String firstNOfKey(String source, int maxlen) {
-        source = source.replace("-----BEGIN RSA PUBLIC KEY-----\n", "");
-        source = source.replace("-----BEGIN RSA PRIVATE KEY-----\n", "");
+        source = source.replace(BEGIN_RSA_PUBLIC_KEY, "");
+        source = source.replace(BEGIN_RSA_PRIVATE_KEY, "");
         return source.substring(0, Math.min(source.length(), maxlen));
     }
 
@@ -59,11 +62,19 @@ public class KeyPairHolder {
         this.privateKey = privateKey;
     }
 
-    public KeyPair getKeyPair() {
-        return keyPair;
+    public String getPgpPrivateKey() {
+        return pgpPrivateKey;
     }
 
-    public void setKeyPair(KeyPair keyPair) {
-        this.keyPair = keyPair;
+    public void setPgpPrivateKey(String pgpPrivateKey) {
+        this.pgpPrivateKey = pgpPrivateKey;
+    }
+
+    public String getPgpPublicKey() {
+        return pgpPublicKey;
+    }
+
+    public void setPgpPublicKey(String pgpPublicKey) {
+        this.pgpPublicKey = pgpPublicKey;
     }
 }
