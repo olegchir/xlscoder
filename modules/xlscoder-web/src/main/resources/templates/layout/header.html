@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head lang="en">
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8"/>
+
+    <!--https://getbootstrap.com/docs/4.1/getting-started/download/-->
+    <link th:href="@{/webjars/bootstrap/4.1.1/css/bootstrap.min.css}"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"
+          rel="stylesheet" media="screen" />
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="../../static/css/styles.css" />
+</head>
+<body>
+
+<div class="container">
+    <div th:fragment="header">
+        <div class="pb-2 mt-4 mb-2 border-bottom text-center">
+            XLS Coder
+        </div>
+        <ul class="nav justify-content-center" sec:authorize="isAuthenticated()">
+            <li class="nav-item"><a class="nav-link" th:href="@{/}">Home</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/users}" sec:authorize="hasRole('ROLE_ADMIN')">Users</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/keys}" sec:authorize="hasRole('ROLE_ADMIN')">Keys</a></li>
+        </ul>
+    </div>
+</div>
+
+</body>
+</html>

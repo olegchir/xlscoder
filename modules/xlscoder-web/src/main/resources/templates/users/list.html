@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head lang="en">
+    <title>Users</title>
+    <th:block th:include="layout/header"></th:block>
+</head>
+<body>
+<div class="container">
+    <a class="btn btn-primary mb-2" th:href="@{/users/add}" sec:authorize="hasRole('ROLE_ADMIN')">Create User</a>
+    <div th:if="${not #lists.isEmpty(users)}" class="justify-content-center">
+        <table class="table table-striped table-hover text-centered table-centered">
+            <thead>
+                <tr>
+                    <th>Login</th>
+                    <th>Name</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="user : ${users}">
+                    <td th:text="${'@'+user.login}">Login</td>
+                    <td th:text="${user.userName + ' ' + user.userSurname}"></td>
+                    <td><a th:href="${'/users/edit/' + user.id}" class="btn btn-default">Edit</a>
+                    <a th:if="${!user.isAdmin()}" th:href="${'/users/delete/' + user.id}" class="btn btn-danger">Delete</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

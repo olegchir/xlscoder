@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+    <meta charset="UTF-8" />
+    <title>Users</title>
+    <th:block th:include="layout/header"></th:block>
+</head>
+<body>
+<div class="container">
+<div sec:authorize="isAuthenticated()">
+    <div class="container-fluid justify-content-center text-center">
+        <h2>
+            <span th:text="${user.userName + ' ' + user.userSurname + ' (@' + user.login + ')'}">Пользователь</span>
+            <span  class="badge badge-secondary"
+                   th:each="role : ${roles}"
+                   th:text="${role.getHumanReadableName()}">Роль</span>
+        </h2>
+    </div>
+    <div class="container-fluid justify-content-center text-center">
+        <form id="logoutForm" class="invisible" method="POST" th:action="@{/logout}" ></form>
+        <a class="btn btn-secondary mb-2" onclick="document.forms['logoutForm'].submit()">Logout</a>
+    </div>
+</div>
+</div>
+</body>
+</html>

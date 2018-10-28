@@ -1,0 +1,18 @@
+/*.navbar-default {*/
+    /*background: #6db33f;*/
+/*}*/
+
+/*.navbar-default .navbar-brand {*/
+    /*color: white;*/
+/*}*/
+
+/*.navbar-default .navbar-nav > li > a {*/
+    /*color: white;*/
+/*}*/
+
+.table-centered {
+    border-radius: 5px;
+    width: 50%;
+    margin: 0px auto;
+    float: none;
+}
