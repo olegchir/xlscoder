@@ -8,6 +8,7 @@ import com.xlscoder.coder.PGPUtility;
 import com.xlscoder.model.Key;
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPPublicKey;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.*;
@@ -34,21 +35,25 @@ public class CodeTest {
         String src = "OMG!";
         PGPPublicKey pgpPublicKey = PGPUtility.extractPublicKey(decPub);
 
-        OutputStream lastResult = null;
+        ByteArrayOutputStream lastResult = null;
         List<String> results = new ArrayList<>();
         for (int i = 0; i<10; i++) {
-            OutputStream encResult = PGPUtility.encryptString(src, pgpPublicKey, true, null, null);
+            ByteArrayOutputStream encResult = PGPUtility.encryptString(src, pgpPublicKey, true, null, null);
             results.add(encResult.toString());
             lastResult = encResult;
         }
-        Set<String> union = new HashSet<>(results);
-        System.out.println(union.size());
 
+        Set<String> union = new HashSet<>(results);
+        Assert.assertEquals(1, union.size());
+
+        String decResult = PGPUtility.decryptString(restream(lastResult), decPriv, KeyGen.PASSWORD);
+        Assert.assertEquals(src, decResult);
+    }
+
+    InputStream restream(ByteArrayOutputStream src) throws IOException {
         PipedInputStream in = new PipedInputStream();
         final PipedOutputStream out = new PipedOutputStream(in);
-        ((ByteArrayOutputStream) lastResult).writeTo(out);
-
-        String decResult = PGPUtility.decryptString(in, decPriv, KeyGen.PASSWORD);
-        System.out.println(decResult);
+        src.writeTo(out);
+        return in;
     }
 }

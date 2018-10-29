@@ -100,7 +100,7 @@ public class PGPUtility {
         return pgpSecKey.extractPrivateKey(a);
     }
 
-    public static OutputStream encryptString(String data, PGPPublicKey encKey,
+    public static ByteArrayOutputStream encryptString(String data, PGPPublicKey encKey,
                                              boolean deterministic, Date deterministicDate, Byte deterministicSeed)
             throws IOException, PGPException {
         // Destroy all randomness. Very bad solution, but I don't know anything better.
@@ -134,7 +134,7 @@ public class PGPUtility {
         byte[] bytes = binaryOut.toByteArray();
         String result = "";
 
-        OutputStream out = new ByteArrayOutputStream();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
         try (OutputStream cOut = encDataGenerator.open(out, bytes.length)) {
             cOut.write(bytes);
         }
