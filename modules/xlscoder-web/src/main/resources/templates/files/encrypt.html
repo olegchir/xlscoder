@@ -23,6 +23,12 @@
             <div th:if="${#fields.hasErrors('key')}" class="invalid-feedback" th:errors="*{key}">Incorrect value</div>
         </div>
 
+        <div class="form-group">
+            <label for="str">Str</label>
+            <textarea type="text" class="form-control" th:classappend="${#fields.hasErrors('str')} ? 'is-invalid' : ''" id="str" th:field="*{str}"></textarea>
+            <div th:if="${#fields.hasErrors('str')}" class="invalid-feedback" th:errors="*{str}">Incorrect value</div>
+        </div>
+
         <button type="submit" class="btn btn-primary mb-2">Run encryption</button>
     </form>
 </div>

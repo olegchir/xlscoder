@@ -1,6 +1,7 @@
 package com.xlscoder.controller;
 
 import com.xlscoder.dto.FileEncryptionRequest;
+import com.xlscoder.model.Key;
 import com.xlscoder.model.User;
 import com.xlscoder.repository.KeyRepository;
 import com.xlscoder.repository.UserRepository;
@@ -28,7 +29,7 @@ public class CryptoController {
     private SecurityService securityService;
 
     @RequestMapping(path = "/files/encrypt", method = RequestMethod.POST)
-    public String encrypt(
+    public String encrypt(@ModelAttribute("rq") FileEncryptionRequest rq,
 //            @RequestParam("file") MultipartFile file,
                                    RedirectAttributes redirectAttributes) {
 

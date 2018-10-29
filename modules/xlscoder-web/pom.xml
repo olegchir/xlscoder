@@ -41,6 +41,13 @@
 			<version>1.60</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.google.jimfs</groupId>
+			<artifactId>jimfs</artifactId>
+			<version>1.1</version>
+		</dependency>
+
+
 		<!-- WEB -->
 
 		<dependency>
