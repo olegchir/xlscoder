@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+    <meta charset="UTF-8" />
+    <title>Login</title>
+    <th:block th:include="layout/header"></th:block>
+</head>
+<body>
+
+<div class="container">
+    <h2>Encrypt file</h2>
+
+    <div th:if="${error != null}" th:text="${error}" class="alert alert-danger" role="alert"></div>
+    <div th:if="${message != null}" th:text="${message}" class="alert alert-success" role="alert"></div>
+
+    <form class="form-signin form-horizontal" th:object="${rq}" th:action="@{/files/encrypt}" method="post" enctype="multipart/form-data" novalidate="">
+        <div class="form-group">
+            <label for="key">Key block</label>
+            <select class="form-control" th:field="*{key}"  id="key" th:classappend="${#fields.hasErrors('key')} ? 'is-invalid' : ''">
+                <option value="0" >select key</option>
+                <option th:each="ekey : ${keys}" th:value="${ekey.id}" th:text="${ekey.keyName}"></option>
+            </select>
+            <div th:if="${#fields.hasErrors('key')}" class="invalid-feedback" th:errors="*{key}">Incorrect value</div>
+        </div>
+
+        <button type="submit" class="btn btn-primary mb-2">Run encryption</button>
+    </form>
+</div>
+</body>
+</html>

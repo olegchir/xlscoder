@@ -8,7 +8,7 @@
 <body>
 
 <div class="container">
-    <h2 th:text="${key.id != null ? 'Update account information' : 'Register a new key block'}">Register account</h2>
+    <h2 th:text="${key.id != null ? 'Update key block' : 'Register a new key block'}">Register account</h2>
 
     <div th:if="${error != null}" th:text="${error}" class="alert alert-danger" role="alert"></div>
     <div th:if="${message != null}" th:text="${message}" class="alert alert-success" role="alert"></div>
@@ -20,12 +20,16 @@
         </div>
 
         <div class="form-group">
-            <label for="user">Owner</label>
-            <select class="form-control" th:field="*{user}"  id="user" th:classappend="${#fields.hasErrors('user')} ? 'is-invalid' : ''">
+            <label for="users">Owner</label>
+            <select class="form-control" th:field="*{users}"  id="users" multiple="multiple" th:classappend="${#fields.hasErrors('users')} ? 'is-invalid' : ''">
                 <option value="0" >select owner</option>
-                <option th:each="user : ${users}" th:value="${user.id}" th:text="${user.userName + ' ' + user.userSurname + ' (@' + user.login + ')'}"></option>
+                <option th:each="user : ${allUsers}"
+                        th:value="${user.id}"
+                        th:field="*{users}"
+                        th:text="${user.userName + ' ' + user.userSurname + ' (@' + user.login + ')'}">
+                </option>
             </select>
-            <div th:if="${#fields.hasErrors('user')}" class="invalid-feedback" th:errors="*{user}">Incorrect value</div>
+            <div th:if="${#fields.hasErrors('users')}" class="invalid-feedback" th:errors="*{users}">Incorrect value</div>
         </div>
 
         <div class="form-group">

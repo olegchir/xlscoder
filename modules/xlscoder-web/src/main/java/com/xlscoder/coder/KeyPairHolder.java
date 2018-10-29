@@ -1,5 +1,6 @@
 package com.xlscoder.coder;
 
+import java.util.Arrays;
 import java.util.Base64;
 
 public class KeyPairHolder {
@@ -7,14 +8,17 @@ public class KeyPairHolder {
     public static final String END_RSA_PRIVATE_KEY = "\n-----END RSA PRIVATE KEY-----\n";
     public static final String BEGIN_RSA_PUBLIC_KEY = "-----BEGIN RSA PUBLIC KEY-----\n";
     public static final String END_RSA_PUBLIC_KEY = "\n-----END RSA PUBLIC KEY-----\n";
+    public static String[] GARBAGE = new String[] {
+            BEGIN_RSA_PRIVATE_KEY, END_RSA_PRIVATE_KEY, BEGIN_RSA_PUBLIC_KEY, END_RSA_PUBLIC_KEY};
+
     private String publicKey;
     private String privateKey;
     private String pgpPrivateKey;
     private String pgpPublicKey;
 
     public KeyPairHolder(byte[] privateSrc, byte[] publicSrc, byte[] pgpPrivateSrc, byte[] pgpPublicSrc) {
-        this.publicKey = encodedToPublicText(publicSrc);
-        this.privateKey = encodedToPrivateText(privateSrc);
+        this.publicKey = toBase64String(publicSrc);
+        this.privateKey = toBase64String(privateSrc);
         this.pgpPrivateKey = toBase64String(pgpPrivateSrc);
         this.pgpPublicKey = toBase64String(pgpPublicSrc);
     }
@@ -40,11 +44,11 @@ public class KeyPairHolder {
     }
 
     public static String firstNOfKey(String source, int maxlen) {
-        source = source.replace(BEGIN_RSA_PUBLIC_KEY, "");
-        source = source.replace(BEGIN_RSA_PRIVATE_KEY, "");
+        for (String curr : Arrays.asList(GARBAGE)) {
+            source = source.replace(curr, "");
+        }
         return source.substring(0, Math.min(source.length(), maxlen));
     }
-
 
     public String getPublicKey() {
         return publicKey;

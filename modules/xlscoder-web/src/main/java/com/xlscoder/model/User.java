@@ -34,6 +34,11 @@ public class User {
     @JoinTable(name = "User_Role", joinColumns = @JoinColumn(name = "UserID"), inverseJoinColumns = @JoinColumn(name = "RoleID"))
     private Set<Role> roles = new HashSet<>();
 
+    @Column(name="Keys")
+    @ManyToMany
+    @JoinTable(name = "User_Key", joinColumns = @JoinColumn(name = "UserID"), inverseJoinColumns = @JoinColumn(name = "KeyID"))
+    private Set<Key> keys = new HashSet<>();
+
     @Column(name = "UserName", length = DEFAULT_STRING_LENGTH, nullable = false)
     private String userName;
 
@@ -42,9 +47,6 @@ public class User {
 
     @Column(name = "UserEmail", length = DEFAULT_STRING_LENGTH, nullable = false)
     private String userEmail;
-
-    @OneToOne(fetch = FetchType.EAGER, mappedBy = "user", optional = true)
-    private Key key;
 
     public boolean isAdmin() {
         for (Role role: getRoles()) {
@@ -121,11 +123,11 @@ public class User {
         this.userEmail = userEmail;
     }
 
-    public Key getKey() {
-        return key;
+    public Set<Key> getKeys() {
+        return keys;
     }
 
-    public void setKey(Key key) {
-        this.key = key;
+    public void setKeys(Set<Key> keys) {
+        this.keys = keys;
     }
 }

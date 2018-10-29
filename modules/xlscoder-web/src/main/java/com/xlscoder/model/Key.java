@@ -4,6 +4,9 @@ import com.xlscoder.coder.KeyPairHolder;
 
 import javax.persistence.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static com.xlscoder.model.Defaults.*;
 
 @Entity
@@ -11,7 +14,6 @@ import static com.xlscoder.model.Defaults.*;
         uniqueConstraints = {
                 @UniqueConstraint(name = "KeyID_UNIQUE", columnNames = {"KeyID"}),
                 @UniqueConstraint(name = "KeyName_UNIQUE", columnNames = {"KeyName"}),
-                @UniqueConstraint(name = "UserID_UNIQUE", columnNames = {"UserID"}),
         })
 public class Key {
     @Column(name="KeyID")
@@ -19,9 +21,9 @@ public class Key {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @OneToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "UserID", nullable = false, foreignKey=@ForeignKey(name="FK_UserID"))
-    private User user;
+    @Column(name="Users")
+    @ManyToMany(mappedBy = "keys")
+    private Set<User> users = new HashSet<>();
 
     @Column(name = "KeyName", length = DEFAULT_STRING_LENGTH, nullable = false)
     private String keyName;
@@ -52,14 +54,6 @@ public class Key {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public String getKeyName() {
@@ -100,5 +94,13 @@ public class Key {
 
     public void setPgpPublicKey(String pgpPublicKey) {
         this.pgpPublicKey = pgpPublicKey;
+    }
+
+    public Set<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<User> users) {
+        this.users = users;
     }
 }

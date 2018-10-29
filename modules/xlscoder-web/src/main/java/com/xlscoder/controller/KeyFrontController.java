@@ -68,7 +68,7 @@ public class KeyFrontController {
 
     @RequestMapping(path = "/keys/edit/{id}", method = RequestMethod.GET)
     public String editKey(Model model, @PathVariable(value = "id") Long id) {
-        model.addAttribute("users", userRepository.findAll());
+        model.addAttribute("allUsers", userRepository.findAll());
         model.addAttribute("key", keyRepository.findOne(id));
         return "keys/update";
     }

@@ -28,7 +28,6 @@ public class KeyValidator implements Validator {
         }
         ValidationUtils.rejectIfEmpty(errors, "keyName", "NotEmpty");
 
-        ValidationUtils.rejectIfEmpty(errors, "user", "NotEmpty");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "privateKey", "NotEmpty");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "publicKey", "NotEmpty");
     }
