@@ -6,12 +6,14 @@ import com.xlscoder.coder.KeyGen;
 import com.xlscoder.coder.KeyPairHolder;
 import com.xlscoder.coder.PGPUtility;
 import com.xlscoder.model.Key;
+import org.apache.commons.io.IOUtils;
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -32,28 +34,26 @@ public class CodeTest {
         byte[] decPub = Base64.getDecoder().decode(testKey.getPgpPublicKey());
         byte[] decPriv = Base64.getDecoder().decode(testKey.getPgpPrivateKey());
 
-        String src = "OMG!";
+        String src = "The quick brown fox jumps over the lazy dog";
         PGPPublicKey pgpPublicKey = PGPUtility.extractPublicKey(decPub);
 
-        ByteArrayOutputStream lastResult = null;
+        // Try to encode text multiple times
+        String lastResult = null;
         List<String> results = new ArrayList<>();
         for (int i = 0; i<10; i++) {
-            ByteArrayOutputStream encResult = PGPUtility.encryptString(src, pgpPublicKey, true, null, null);
-            results.add(encResult.toString());
+            String encResult = PGPUtility.encryptString(src, pgpPublicKey, true, null, null);
+            results.add(encResult);
             lastResult = encResult;
         }
 
+        // Check that all executions resulted in a same text
         Set<String> union = new HashSet<>(results);
         Assert.assertEquals(1, union.size());
 
-        String decResult = PGPUtility.decryptString(restream(lastResult), decPriv, KeyGen.PASSWORD);
+        // Check that decrypted text equals the source
+        String decResult = PGPUtility.decryptString(lastResult, decPriv, KeyGen.PASSWORD);
         Assert.assertEquals(src, decResult);
-    }
 
-    InputStream restream(ByteArrayOutputStream src) throws IOException {
-        PipedInputStream in = new PipedInputStream();
-        final PipedOutputStream out = new PipedOutputStream(in);
-        src.writeTo(out);
-        return in;
+        System.out.println(decResult);
     }
 }

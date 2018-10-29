@@ -11,6 +11,7 @@ import java.io.*;
 import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 import java.security.Security;
+import java.util.Base64;
 import java.util.Date;
 import java.util.Iterator;
 
@@ -20,11 +21,12 @@ public class PGPUtility {
     public static final InsecureRandom DEFAULT_DETERMINISTIC_RANDOM = new InsecureRandom(new Byte("1"));
 
     @SuppressWarnings("unchecked")
-    public static String decryptString(InputStream in, byte[] privKeyIn, String password)
+    public static String decryptString(String src, byte[] privKeyIn, String password)
             throws Exception
     {
         Security.addProvider(new BouncyCastleProvider());
 
+        InputStream in  = new ByteArrayInputStream(Base64.getDecoder().decode(src));
         in = PGPUtil.getDecoderStream(in);
         PGPObjectFactory objectFactory = new PGPObjectFactory(in, new JcaKeyFingerprintCalculator());
 
@@ -100,7 +102,7 @@ public class PGPUtility {
         return pgpSecKey.extractPrivateKey(a);
     }
 
-    public static ByteArrayOutputStream encryptString(String data, PGPPublicKey encKey,
+    public static String encryptString(String data, PGPPublicKey encKey,
                                              boolean deterministic, Date deterministicDate, Byte deterministicSeed)
             throws IOException, PGPException {
         // Destroy all randomness. Very bad solution, but I don't know anything better.
@@ -132,14 +134,16 @@ public class PGPUtility {
         encDataGenerator.addMethod(jceEncMethod);
 
         byte[] bytes = binaryOut.toByteArray();
-        String result = "";
+        String result = null;
 
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        try (OutputStream cOut = encDataGenerator.open(out, bytes.length)) {
-            cOut.write(bytes);
+        try(ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            try (OutputStream cOut = encDataGenerator.open(out, bytes.length)) {
+                cOut.write(bytes);
+            }
+            result = Base64.getEncoder().encodeToString(out.toByteArray());
         }
 
-        return out;
+        return result;
     }
 
     public static void writeStreamToLiteralData(
@@ -207,4 +211,10 @@ public class PGPUtility {
         return key;
     }
 
+    public static InputStream restream(ByteArrayOutputStream src) throws IOException {
+        PipedInputStream in = new PipedInputStream();
+        final PipedOutputStream out = new PipedOutputStream(in);
+        src.writeTo(out);
+        return in;
+    }
 }
