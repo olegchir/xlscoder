@@ -4,6 +4,13 @@ import java.util.Arrays;
 import java.util.Base64;
 
 public class KeyPairHolder {
+
+    // Can't remove this garbage easy, because
+    // textarea in browsers always change LF to CR LF, and that's dumbest thing I ever seen.
+    // Technically we can just strip newlines. But what's our guarantee?
+    // https://crypto.stackexchange.com/questions/19043/can-i-remove-newlines-in-a-public-key
+    // So, I prefer just not to store garbage in database, and generate it ad-hoc.
+
     public static final String BEGIN_RSA_PRIVATE_KEY = "-----BEGIN RSA PRIVATE KEY-----\n";
     public static final String END_RSA_PRIVATE_KEY = "\n-----END RSA PRIVATE KEY-----\n";
     public static final String BEGIN_RSA_PUBLIC_KEY = "-----BEGIN RSA PUBLIC KEY-----\n";
