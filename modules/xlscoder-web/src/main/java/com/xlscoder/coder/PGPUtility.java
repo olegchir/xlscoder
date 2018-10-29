@@ -16,6 +16,9 @@ import java.util.Iterator;
 
 public class PGPUtility {
 
+    public static final Date DEFAULT_DETERMINISTIC_DATE = new Date(1220227200L * 1000);
+    public static final InsecureRandom DEFAULT_DETERMINISTIC_RANDOM = new InsecureRandom(new Byte("1"));
+
     @SuppressWarnings("unchecked")
     public static String decryptString(InputStream in, byte[] privKeyIn, String password)
             throws Exception
@@ -97,21 +100,34 @@ public class PGPUtility {
         return pgpSecKey.extractPrivateKey(a);
     }
 
-    public static OutputStream encryptString(String data, PGPPublicKey encKey)
+    public static OutputStream encryptString(String data, PGPPublicKey encKey,
+                                             boolean deterministic, Date deterministicDate, Byte deterministicSeed)
             throws IOException, PGPException {
+        // Destroy all randomness. Very bad solution, but I don't know anything better.
+        Date modificationDate;
+        SecureRandom conditionalRandom;
+        if (deterministic) {
+            modificationDate = (null == deterministicDate ? DEFAULT_DETERMINISTIC_DATE : deterministicDate);
+            conditionalRandom = (null == deterministicSeed ? DEFAULT_DETERMINISTIC_RANDOM : new InsecureRandom(deterministicSeed));
+        } else {
+            modificationDate = new Date();
+            conditionalRandom = new SecureRandom();
+        }
+        // End of: destroy all randomness
+
         Security.addProvider(new BouncyCastleProvider());
 
         ByteArrayOutputStream binaryOut = new ByteArrayOutputStream();
         PGPCompressedDataGenerator zippedData = new PGPCompressedDataGenerator(PGPCompressedData.ZIP);
 
         InputStream is = new ByteArrayInputStream(data.getBytes());
-        writeStreamToLiteralData(zippedData.open(binaryOut), PGPLiteralData.BINARY, is);
+        writeStreamToLiteralData(zippedData.open(binaryOut), PGPLiteralData.BINARY, is, modificationDate);
 
         zippedData.close();
 
-        JcePGPDataEncryptorBuilder c = new JcePGPDataEncryptorBuilder(PGPEncryptedData.CAST5).setWithIntegrityPacket(false).setSecureRandom(new InsecureRandom(new Byte("1"))).setProvider("BC");
+        JcePGPDataEncryptorBuilder c = new JcePGPDataEncryptorBuilder(PGPEncryptedData.CAST5).setWithIntegrityPacket(false).setSecureRandom(conditionalRandom).setProvider("BC");
         PGPEncryptedDataGenerator encDataGenerator = new PGPEncryptedDataGenerator(c);
-        JcePublicKeyKeyEncryptionMethodGenerator jceEncMethod = new JcePublicKeyKeyEncryptionMethodGenerator(encKey).setProvider(new BouncyCastleProvider()).setSecureRandom(new InsecureRandom(new Byte("1")));
+        JcePublicKeyKeyEncryptionMethodGenerator jceEncMethod = new JcePublicKeyKeyEncryptionMethodGenerator(encKey).setProvider(new BouncyCastleProvider()).setSecureRandom(conditionalRandom);
 
         encDataGenerator.addMethod(jceEncMethod);
 
@@ -129,11 +145,12 @@ public class PGPUtility {
     public static void writeStreamToLiteralData(
             OutputStream out,
             char fileType,
-            InputStream in)
+            InputStream in,
+            Date modificationDate)
             throws IOException
     {
         PGPLiteralDataGenerator lData = new PGPLiteralDataGenerator();
-        OutputStream pOut = lData.open(out, fileType, "temp", new Date(), new byte[4096]);
+        OutputStream pOut = lData.open(out, fileType, "temp", modificationDate, new byte[4096]);
         pipeStreamContents(in, pOut, new byte[32768]);
     }
 

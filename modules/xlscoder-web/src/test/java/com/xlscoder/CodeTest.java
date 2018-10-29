@@ -34,19 +34,21 @@ public class CodeTest {
         String src = "OMG!";
         PGPPublicKey pgpPublicKey = PGPUtility.extractPublicKey(decPub);
 
+        OutputStream lastResult = null;
         List<String> results = new ArrayList<>();
         for (int i = 0; i<10; i++) {
-            OutputStream encResult = PGPUtility.encryptString(src, pgpPublicKey);
+            OutputStream encResult = PGPUtility.encryptString(src, pgpPublicKey, true, null, null);
             results.add(encResult.toString());
+            lastResult = encResult;
         }
         Set<String> union = new HashSet<>(results);
         System.out.println(union.size());
 
-//        PipedInputStream in = new PipedInputStream();
-//        final PipedOutputStream out = new PipedOutputStream(in);
-//        ((ByteArrayOutputStream) encResult).writeTo(out);
-//
-//        String decResult = PGPUtility.decryptString(in, decPriv, KeyGen.PASSWORD);
-//        System.out.println(decResult);
+        PipedInputStream in = new PipedInputStream();
+        final PipedOutputStream out = new PipedOutputStream(in);
+        ((ByteArrayOutputStream) lastResult).writeTo(out);
+
+        String decResult = PGPUtility.decryptString(in, decPriv, KeyGen.PASSWORD);
+        System.out.println(decResult);
     }
 }
