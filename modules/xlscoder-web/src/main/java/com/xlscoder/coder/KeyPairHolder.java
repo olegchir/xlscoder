@@ -7,6 +7,8 @@ public class KeyPairHolder {
 
     // Can't remove this garbage easy, because
     // textarea in browsers always change LF to CR LF, and that's dumbest thing I ever seen.
+    // https://stackoverflow.com/questions/14217101/what-character-represents-a-new-line-in-a-text-area
+    //
     // Technically we can just strip newlines. But what's our guarantee?
     // https://crypto.stackexchange.com/questions/19043/can-i-remove-newlines-in-a-public-key
     // So, I prefer just not to store garbage in database, and generate it ad-hoc.
