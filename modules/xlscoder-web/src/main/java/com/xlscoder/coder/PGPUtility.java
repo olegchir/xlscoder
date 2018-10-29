@@ -109,9 +109,9 @@ public class PGPUtility {
 
         zippedData.close();
 
-        JcePGPDataEncryptorBuilder c = new JcePGPDataEncryptorBuilder(PGPEncryptedData.CAST5).setWithIntegrityPacket(false).setSecureRandom(new SecureRandom()).setProvider("BC");
+        JcePGPDataEncryptorBuilder c = new JcePGPDataEncryptorBuilder(PGPEncryptedData.CAST5).setWithIntegrityPacket(false).setSecureRandom(new InsecureRandom(new Byte("1"))).setProvider("BC");
         PGPEncryptedDataGenerator encDataGenerator = new PGPEncryptedDataGenerator(c);
-        JcePublicKeyKeyEncryptionMethodGenerator jceEncMethod = new JcePublicKeyKeyEncryptionMethodGenerator(encKey).setProvider(new BouncyCastleProvider()).setSecureRandom(new SecureRandom());
+        JcePublicKeyKeyEncryptionMethodGenerator jceEncMethod = new JcePublicKeyKeyEncryptionMethodGenerator(encKey).setProvider(new BouncyCastleProvider()).setSecureRandom(new InsecureRandom(new Byte("1")));
 
         encDataGenerator.addMethod(jceEncMethod);
 

@@ -16,7 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.util.Base64;
+import java.util.*;
 
 public class CodeTest {
     @Test
@@ -33,13 +33,20 @@ public class CodeTest {
 
         String src = "OMG!";
         PGPPublicKey pgpPublicKey = PGPUtility.extractPublicKey(decPub);
-        OutputStream encResult = PGPUtility.encryptString(src, pgpPublicKey);
 
-        PipedInputStream in = new PipedInputStream();
-        final PipedOutputStream out = new PipedOutputStream(in);
-        ((ByteArrayOutputStream) encResult).writeTo(out);
+        List<String> results = new ArrayList<>();
+        for (int i = 0; i<10; i++) {
+            OutputStream encResult = PGPUtility.encryptString(src, pgpPublicKey);
+            results.add(encResult.toString());
+        }
+        Set<String> union = new HashSet<>(results);
+        System.out.println(union.size());
 
-        String decResult = PGPUtility.decryptString(in, decPriv, KeyGen.PASSWORD);
-        System.out.println(decResult);
+//        PipedInputStream in = new PipedInputStream();
+//        final PipedOutputStream out = new PipedOutputStream(in);
+//        ((ByteArrayOutputStream) encResult).writeTo(out);
+//
+//        String decResult = PGPUtility.decryptString(in, decPriv, KeyGen.PASSWORD);
+//        System.out.println(decResult);
     }
 }
