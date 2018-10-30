@@ -1,5 +1,6 @@
 package com.xlscoder.coder;
 
+import com.xlscoder.model.Key;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openpgp.*;
 import org.bouncycastle.openpgp.operator.PBESecretKeyDecryptor;
@@ -19,6 +20,11 @@ public class PGPUtility {
 
     public static final Date DEFAULT_DETERMINISTIC_DATE = new Date(1220227200L * 1000);
     public static final InsecureRandom DEFAULT_DETERMINISTIC_RANDOM = new InsecureRandom(new Byte("1"));
+
+    public static String decryptString(String src, Key key, String password) throws Exception {
+        byte[] decPriv = Base64.getDecoder().decode(key.getPgpPrivateKey());
+        return decryptString(src, decPriv, password);
+    }
 
     @SuppressWarnings("unchecked")
     public static String decryptString(String src, byte[] privKeyIn, String password)
@@ -100,6 +106,12 @@ public class PGPUtility {
 
         PBESecretKeyDecryptor a = new JcePBESecretKeyDecryptorBuilder(new JcaPGPDigestCalculatorProviderBuilder().setProvider("BC").build()).setProvider("BC").build(password.toCharArray());
         return pgpSecKey.extractPrivateKey(a);
+    }
+
+    public static String encryptString(String data, Key key) throws IOException, PGPException {
+        byte[] decPub = Base64.getDecoder().decode(key.getPgpPublicKey());
+        PGPPublicKey pgpPublicKey = PGPUtility.extractPublicKey(decPub);
+        return encryptString(data, pgpPublicKey, false, null, null);
     }
 
     public static String encryptString(String data, PGPPublicKey encKey,

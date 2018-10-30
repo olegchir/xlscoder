@@ -1,6 +1,7 @@
 package com.xlscoder.xls;
 
 
+import com.xlscoder.lang.Converters;
 import org.apache.poi.ss.usermodel.*;
 
 import java.util.Date;
@@ -19,7 +20,7 @@ public class XLSHelper {
                 Date dateCellValue = cell.getDateCellValue();
                 value = Optional.of(dateCellValue.toString());
             } else {
-                value = Optional.of(Double.toString(cell.getNumericCellValue()));
+                value = Optional.of(Converters.universalValue(cell.getNumericCellValue()));
             }
         } else if (cellType.getCode() == CellType.BOOLEAN.getCode()) {
             value = Optional.of(Boolean.toString(cell.getBooleanCellValue()));
