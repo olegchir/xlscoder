@@ -36,6 +36,7 @@ public class KeyFrontController {
     @RequestMapping(path = "/keys/add", method = RequestMethod.GET)
     public String createKey(Model model) throws NoSuchAlgorithmException, NoSuchProviderException, PGPException, IOException {
         model.addAttribute("users", userRepository.findAll());
+        model.addAttribute("allUsers", userRepository.findAll());
         Key key = new Key();
         KeyPairHolder keyPairHolder = KeyGen.generatePairs();
         key.setPrivateKey(keyPairHolder.getPrivateKey());

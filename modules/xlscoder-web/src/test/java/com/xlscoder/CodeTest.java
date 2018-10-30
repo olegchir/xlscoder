@@ -1,29 +1,29 @@
 package com.xlscoder;
 
-import com.google.common.jimfs.Configuration;
-import com.google.common.jimfs.Jimfs;
 import com.xlscoder.coder.KeyGen;
-import com.xlscoder.coder.KeyPairHolder;
 import com.xlscoder.coder.PGPUtility;
 import com.xlscoder.model.Key;
-import org.apache.commons.io.IOUtils;
-import org.bouncycastle.openpgp.PGPException;
+import com.xlscoder.xls.XLSHelper;
+import com.xlscoder.xls.XLSet;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.poi.ss.formula.functions.Column;
+import org.apache.poi.ss.usermodel.*;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystem;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class CodeTest {
     @Test
-    public void CodeRestoredEqualsTest() throws Exception {
+    public void codeRestoredEqualsTest() throws Exception {
         Key testKey = new Key();
         testKey.setKeyName("test");
         testKey.setPrivateKey("MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCsh1rwe7KI/63A107b81O9Y9mIZ+6hbidv8haNhTl5F2ZWPmET9WdNdyjU8XbWHb9bTFXDtXgeVMYozJf5joPIjqHW3kEwRGW5tWb8w0MSFPsE6kcTUT//fkRyNy/bmfYlx0GtAzdx4YD5PcfB8JD/kD+8srJNKNbJZ6S0pvidri5uWFS9VMwy5ewAh6JXyDaRNoZQ0dv2Uh2R8Hvj+rn7/LyNCc0sJG+8+PHEnabsLnkaDqzx0qbCN+1dM6vL157fjErsoYoXlSyin/5mdTJE7ho08exaVaaH3rkKqUl2CPpeEkSI/D9K7jPWWPx55DMVGWoyFE2r7RVpq3goC6uhAgMBAAECggEABDj73M7qO7gmRIYAhBmcfxImjNQeXw0XIgJG0wfjtDcCZjH4pkhnUtoLwcp3Ih5wRIfFwZh7bCKfBvia75yxVQNIqr2d0tSZuMXb02vkBFlHG4OwYaSncFViz3jSTwmhoKMT1GwzuzHNukvsy65bniWlqbSl8IWDXEKRIWrEwvcqFH0FKExyEwdzB+v7L5sh0tyhB+D9sKWaCettPm7GIzilbqdo0ltTnNJfyDuD+7rDsaA9UJrog4e84vyuWoFFGIs5hde8wd0/dBbPNq2qqRBFX41d/Wn2DhnCVQ+zqwJiv1Mam22R01dyoO6l71KA5hr2ko49uySEAReGSW9jAQKBgQDgcZeoTyLYLUUzXHRHwr1cyf4EOtG4Z7PxR2IlgAfak9/79yt16WFwJhEI3IvA5u2vU3XqA+acMowITlbouZT6tSFh/BpH4BoKybHqoI6VZQhupPo9kHqorzPUyefXK2pq7SuGvUw303U1QaxW/UJvBFkERHp7ZTSQwWY9VU72KQKBgQDEyS9+QUBB/blKTCIt9bW2/HSJBv6cl6smnzrXDR94TiHBVeTO/7Sjorfu3+H72MPAxpt77oZbP9SvorjMI46s0Fn7SG1OuqwUOj6gn3TDYano4JuBqAcgT3C6TnnULElfSanI4gDoChoyOxgUQTC7q0RwieFG4iH9so9iQEaIuQKBgQCd+VX1cT3lSnfansh5eegu1z2jXIMgeF1/Be9e1a6xekO85UwBwjKC7UgwJIt5SxEgxm3IONaoOiu17O3fAECL9dF5VihpTqMF1NEVg8zX+jTlK9m2W2r6L9cbfsFgAX71o9lvDO4InR1yTrcuwzNvUHAXQNu03pcRDA8aPGFHgQKBgGVhDFGsBhG5SBMJw/YPhs09pD/P1a4QyQC9uY9+2D6fae5zdMxbmdFPjBjJSF/53WdcKlAfoyIxcT4Gw9OPYfqP4Dt/paiQrQRCuW8AlyPtFZ6+z/5s9TblFjs1ILh5FFe92HWAUV05jyNfpFkS+KtGYZzku6VL7J0Jt6qzWGMpAoGABoIbqktHwppSqYVGn/iaoWNug+Gi10L5/gtwwH1Zad5pvE1/8zaLZeaITEhpzEovjR0HjuCXspThSynzgP5aKvpWC2D8rp+dscTRJ3nN2Fg/wvA75/zvrAn6RO7KwEGYAD14RgX00DYV/qy50AVxntjE1ym05st5LoWn8U0B6vE=");
@@ -34,7 +34,7 @@ public class CodeTest {
         byte[] decPub = Base64.getDecoder().decode(testKey.getPgpPublicKey());
         byte[] decPriv = Base64.getDecoder().decode(testKey.getPgpPrivateKey());
 
-        String src = "The quick brown fox jumps over the lazy dog";
+        String src = "12";
         PGPPublicKey pgpPublicKey = PGPUtility.extractPublicKey(decPub);
 
         // Try to encode text multiple times
@@ -48,12 +48,43 @@ public class CodeTest {
 
         // Check that all executions resulted in a same text
         Set<String> union = new HashSet<>(results);
-        Assert.assertEquals(1, union.size());
+        assertEquals(1, union.size());
 
         // Check that decrypted text equals the source
         String decResult = PGPUtility.decryptString(lastResult, decPriv, KeyGen.PASSWORD);
-        Assert.assertEquals(src, decResult);
+        assertEquals(src, decResult);
 
         System.out.println(decResult);
     }
+
+    @Test
+    public void excelReadTest() throws Exception {
+        String filename = "Z:\\temp\\src.xlsx";
+
+        List<String> colsToEnc = new ArrayList<>();
+        colsToEnc.add("NAME");
+        colsToEnc.add("PHONE");
+
+        HashMap<String, Column> encColumns = new HashMap<>();
+
+        try(InputStream inputStream = new FileInputStream(new File(filename))) {
+            String desiredColumnName = "PHONE";
+            List<String> desiredColumnValues = Arrays.asList("4.0", "5.0", "6.0");
+
+            Workbook wb = WorkbookFactory.create(inputStream);
+            Sheet sheet = wb.getSheetAt(0);
+            XLSet phone = XLSet.extractColumn(sheet, desiredColumnName);
+
+            List<String> values = phone.getItems().stream()
+                    .map(XLSHelper::getUniversalValue)
+                    .map(v -> v.orElse(""))
+                    .collect(Collectors.toList());
+
+            assertTrue(CollectionUtils.isEqualCollection(values, desiredColumnValues));
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
 }
