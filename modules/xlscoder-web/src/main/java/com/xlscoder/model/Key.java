@@ -40,6 +40,9 @@ public class Key {
     @Column(name = "PGPPublicKey", length = DEFAULT_KEY_LENGTH, nullable = false)
     private String pgpPublicKey;
 
+    @Column(name = "SHASalt", length = DEFAULT_KEY_LENGTH, nullable = false)
+    private String shaSalt;
+
     public String getShortPrivateKey() {
         return KeyPairHolder.firstNOfKey(privateKey, 50);
     }
@@ -102,5 +105,13 @@ public class Key {
 
     public void setUsers(Set<User> users) {
         this.users = users;
+    }
+
+    public String getShaSalt() {
+        return shaSalt;
+    }
+
+    public void setShaSalt(String shaSalt) {
+        this.shaSalt = shaSalt;
     }
 }

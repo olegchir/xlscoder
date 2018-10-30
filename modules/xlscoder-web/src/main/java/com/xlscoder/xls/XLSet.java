@@ -1,16 +1,21 @@
 package com.xlscoder.xls;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static com.xlscoder.xls.XLSHelper.getCellAt;
 
 public class XLSet {
+    public static final Logger logger = LoggerFactory.getLogger(XLSet.class);
     private List<Cell> items = new ArrayList<>();
 
     private XLSet() {
@@ -22,7 +27,15 @@ public class XLSet {
 
             if (null != headerProcessor && 0 == counter)  {
                 String newHeaderValue = headerProcessor.apply(item);
-                item.setCellValue(newHeaderValue);
+                if (inPlace) {
+                    item.setCellValue(newHeaderValue);
+                } else {
+                    Row row = item.getRow();
+                    short lastCellNum = row.getLastCellNum();
+                    row.createCell(lastCellNum, CellType.STRING);
+                    row.getCell(lastCellNum).setCellValue(newHeaderValue);
+                }
+                continue;
             }
 
             String newValue = processor.apply(item);
@@ -33,13 +46,13 @@ public class XLSet {
             } else {
                 Row row = item.getRow();
                 short lastCellNum = row.getLastCellNum();
-                row.createCell(lastCellNum + 1, CellType.STRING);
-                row.getCell(lastCellNum + 1).setCellValue(newValue);
+                row.createCell(lastCellNum, CellType.STRING);
+                row.getCell(lastCellNum).setCellValue(newValue);
             }
         }
     }
 
-    public static XLSet extractColumn(Sheet sheet, String rowName) {
+    public static XLSet extractColumn(Sheet sheet, String columnName) {
         XLSet that = new XLSet();
 
         Row row = sheet.getRow(0);
@@ -48,9 +61,12 @@ public class XLSet {
         int foundRowIndex = -1;
         for (int i = 0; i < lastCellNum; i++) {
             Cell currCell = getCellAt(row, i);
-
+            if (null == currCell) {
+                logger.error(String.format("Missing cell in the XLS file. Bad sign! Coordinates: [%s,%s]. Occured while searching for column with name \"%s\"", row.getRowNum(), i, columnName));
+                continue;
+            }
             String stringCellValue = currCell.getStringCellValue();
-            if (!StringUtils.isBlank(stringCellValue) && stringCellValue.equals(rowName)) {
+            if (!StringUtils.isBlank(stringCellValue) && stringCellValue.equals(columnName)) {
                 foundRowIndex = i;
             }
         }

@@ -3,6 +3,8 @@ package com.xlscoder.coder;
 import java.util.Arrays;
 import java.util.Base64;
 
+import static com.xlscoder.coder.HashHelper.base64encode;
+
 public class KeyPairHolder {
 
     // Can't remove this garbage easy, because
@@ -24,12 +26,14 @@ public class KeyPairHolder {
     private String privateKey;
     private String pgpPrivateKey;
     private String pgpPublicKey;
+    private String shaSalt;
 
-    public KeyPairHolder(byte[] privateSrc, byte[] publicSrc, byte[] pgpPrivateSrc, byte[] pgpPublicSrc) {
-        this.publicKey = toBase64String(publicSrc);
-        this.privateKey = toBase64String(privateSrc);
-        this.pgpPrivateKey = toBase64String(pgpPrivateSrc);
-        this.pgpPublicKey = toBase64String(pgpPublicSrc);
+    public KeyPairHolder(byte[] privateSrc, byte[] publicSrc, byte[] pgpPrivateSrc, byte[] pgpPublicSrc, String shaSalt) {
+        this.publicKey = base64encode(publicSrc);
+        this.privateKey = base64encode(privateSrc);
+        this.pgpPrivateKey = base64encode(pgpPrivateSrc);
+        this.pgpPublicKey = base64encode(pgpPublicSrc);
+        this.shaSalt = shaSalt;
     }
 
     private String encodedToPrivateText(byte[] src) {
@@ -46,10 +50,6 @@ public class KeyPairHolder {
         result += encoder.encodeToString(src);
         result += END_RSA_PUBLIC_KEY;
         return result;
-    }
-
-    private String toBase64String(byte[] src) {
-        return Base64.getEncoder().encodeToString(src);
     }
 
     public static String firstNOfKey(String source, int maxlen) {
@@ -89,5 +89,13 @@ public class KeyPairHolder {
 
     public void setPgpPublicKey(String pgpPublicKey) {
         this.pgpPublicKey = pgpPublicKey;
+    }
+
+    public String getShaSalt() {
+        return shaSalt;
+    }
+
+    public void setShaSalt(String shaSalt) {
+        this.shaSalt = shaSalt;
     }
 }

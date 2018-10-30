@@ -1,5 +1,7 @@
 package com.xlscoder.coder;
 
+import org.apache.commons.text.CharacterPredicates;
+import org.apache.commons.text.RandomStringGenerator;
 import org.bouncycastle.bcpg.HashAlgorithmTags;
 import org.bouncycastle.bcpg.RSASecretBCPGKey;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -26,13 +28,21 @@ public class KeyGen {
         KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA", DEFAULT_CRYPTO_PROVIDER);
         generator.initialize(DEFAULT_KEY_SIZE);
         KeyPair keyPair = generator.generateKeyPair();
-        
+
         Pair<byte[], byte[]> pgpKeys = getPgpKeys(keyPair.getPrivate(), keyPair.getPublic(), IDENTITY, PASSWORD.toCharArray());
+
+        RandomStringGenerator randomStringGenerator =
+                new RandomStringGenerator.Builder()
+                        .withinRange('0', 'z')
+                        .filteredBy(CharacterPredicates.LETTERS, CharacterPredicates.DIGITS)
+                        .build();
+        String shaSalt = randomStringGenerator.generate(12);
 
         KeyPairHolder keyPairHolder = new KeyPairHolder(
                 keyPair.getPrivate().getEncoded(),
                 keyPair.getPublic().getEncoded(),
-                pgpKeys.first, pgpKeys.second);
+                pgpKeys.first, pgpKeys.second,
+                shaSalt);
 
         return keyPairHolder;
     }

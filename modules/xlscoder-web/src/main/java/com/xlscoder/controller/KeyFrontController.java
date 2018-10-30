@@ -43,6 +43,7 @@ public class KeyFrontController {
         key.setPublicKey(keyPairHolder.getPublicKey());
         key.setPgpPrivateKey(keyPairHolder.getPgpPrivateKey());
         key.setPgpPublicKey(keyPairHolder.getPgpPublicKey());
+        key.setShaSalt(keyPairHolder.getShaSalt());
         model.addAttribute("key", key);
         return "keys/update";
     }

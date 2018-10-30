@@ -1,10 +1,13 @@
 package com.xlscoder;
 
+import com.xlscoder.coder.HashHelper;
 import com.xlscoder.coder.KeyGen;
 import com.xlscoder.coder.PGPUtility;
 import com.xlscoder.model.Key;
+import com.xlscoder.xls.XLFile;
 import com.xlscoder.xls.XLSHelper;
 import com.xlscoder.xls.XLSet;
+import org.apache.commons.codec.digest.Crypt;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.formula.functions.Column;
@@ -21,6 +24,7 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.xlscoder.coder.HashHelper.base64encode;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
@@ -77,23 +81,15 @@ public class CodeTest {
 
             Workbook wb = WorkbookFactory.create(inputStream);
             Sheet sheet = wb.getSheetAt(0);
-            XLSet phones = XLSet.extractColumn(sheet, desiredColumnName);
 
+            XLSet phones = XLSet.extractColumn(sheet, desiredColumnName);
             List<String> values = phones.getItems().stream()
                     .map(XLSHelper::getUniversalValue)
                     .map(v -> v.orElse(""))
                     .collect(Collectors.toList());
-
-            phones.replaceOrAppend(false,
-                    true,
-                    null,
-                    cell -> XLSHelper.getUniversalValue(cell).orElse("<empty>") + ":sha512");
-            phones.replaceOrAppend(true,
-                    false,
-                    String::valueOf,
-                    le(cell -> PGPUtility.encryptString(XLSHelper.getUniversalValue(cell).orElse(""), testKey)));
-
             assertTrue(CollectionUtils.isEqualCollection(values, desiredColumnValues));
+
+            XLFile.encodeColumns(testKey, sheet, "NAME", "PHONE");
 
             File fileToDelete = FileUtils.getFile(newFilename);
             FileUtils.deleteQuietly(fileToDelete);
@@ -107,6 +103,33 @@ public class CodeTest {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    @Test
+    public void shaTest() {
+        String src = "hi !!!";
+        String salt = "$6$1234";
+        // Try to encode text multiple times
+        String lastResult = null;
+        List<String> results = new ArrayList<>();
+        for (int i = 0; i<10; i++) {
+            String encResult = Crypt.crypt(src, salt);
+            results.add(encResult);
+            lastResult = encResult;
+        }
+
+        // Check that all executions resulted in a same text
+        Set<String> union = new HashSet<>(results);
+        assertEquals(1, union.size());
+
+        String storedPwd = Crypt.crypt("pass", "salt");
+        String enteredPwd = "pass";
+        assertEquals(storedPwd, Crypt.crypt(enteredPwd, storedPwd));
+
+        String storedSalt = "salt"; //must be secret and changable
+        String storedPwd2 = HashHelper.stdSha("pass", storedSalt);
+        boolean passEquals = storedPwd2.equals(HashHelper.stdSha("pass", storedSalt));
+        assertTrue(passEquals);
     }
 
 }
