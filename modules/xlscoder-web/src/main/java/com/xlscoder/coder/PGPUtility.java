@@ -222,11 +222,4 @@ public class PGPUtility {
 
         return key;
     }
-
-    public static InputStream restream(ByteArrayOutputStream src) throws IOException {
-        PipedInputStream in = new PipedInputStream();
-        final PipedOutputStream out = new PipedOutputStream(in);
-        src.writeTo(out);
-        return in;
-    }
 }
