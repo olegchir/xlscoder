@@ -7,6 +7,7 @@ public class FileEncryptionRequest {
     private Key key;
     private MultipartFile file;
     private String filter;
+    private Boolean decrypt;
 
     public Key getKey() {
         return key;
@@ -30,5 +31,13 @@ public class FileEncryptionRequest {
 
     public void setFilter(String filter) {
         this.filter = filter;
+    }
+
+    public Boolean getDecrypt() {
+        return decrypt;
+    }
+
+    public void setDecrypt(Boolean decrypt) {
+        this.decrypt = decrypt;
     }
 }

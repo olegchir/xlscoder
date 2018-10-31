@@ -40,7 +40,7 @@ public class CryptoController {
                           RedirectAttributes redirectAttributes) throws IOException {
 
         String[] filters = rq.getFilter().split("\\|");
-        XLFile.sendAndProcess(ProcessingType.ENCRYPT, false,
+        XLFile.sendAndProcess(rq.getDecrypt() ? ProcessingType.DECRYPT : ProcessingType.ENCRYPT, false,
                 rq.getKey(), rq.getFile(),
                 response, Arrays.asList(filters));
     }

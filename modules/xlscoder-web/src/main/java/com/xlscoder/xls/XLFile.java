@@ -28,10 +28,14 @@ public class XLFile {
         try (InputStream inputStream = src.getInputStream()) {
             Workbook wb = WorkbookFactory.create(inputStream);
             Sheet sheet = wb.getSheetAt(0);
+
+            String filenamePrefix = "";
             if (processingType == ProcessingType.ENCRYPT) {
                 encryptColumns(verification, key, sheet, desiredColumnNames);
+                filenamePrefix = "encrypted-";
             } else if (processingType == ProcessingType.DECRYPT) {
                 decryptColumns(verification, key, sheet, desiredColumnNames);
+                filenamePrefix = "decrypted-";
             }
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -39,7 +43,7 @@ public class XLFile {
 
             response.setContentType("mimetype:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             response.setContentLength(baos.size());
-            response.setHeader("Content-Disposition", String.format("inline; filename=\"encrypted-" + src.getOriginalFilename() +"\""));
+            response.setHeader("Content-Disposition", String.format("inline; filename=\"" + filenamePrefix + src.getOriginalFilename() +"\""));
 
             baos.writeTo(response.getOutputStream());
             response.flushBuffer();
