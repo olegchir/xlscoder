@@ -1,10 +1,12 @@
 package com.xlscoder.dto;
 
 import com.xlscoder.model.Key;
+import org.springframework.web.multipart.MultipartFile;
 
 public class FileEncryptionRequest {
     private Key key;
-    private String str;
+    private MultipartFile file;
+    private String filter;
 
     public Key getKey() {
         return key;
@@ -14,11 +16,19 @@ public class FileEncryptionRequest {
         this.key = key;
     }
 
-    public String getStr() {
-        return str;
+    public MultipartFile getFile() {
+        return file;
     }
 
-    public void setStr(String str) {
-        this.str = str;
+    public void setFile(MultipartFile file) {
+        this.file = file;
+    }
+
+    public String getFilter() {
+        return filter;
+    }
+
+    public void setFilter(String filter) {
+        this.filter = filter;
     }
 }

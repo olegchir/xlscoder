@@ -24,9 +24,15 @@
         </div>
 
         <div class="form-group">
-            <label for="str">Str</label>
-            <textarea type="text" class="form-control" th:classappend="${#fields.hasErrors('str')} ? 'is-invalid' : ''" id="str" th:field="*{str}"></textarea>
-            <div th:if="${#fields.hasErrors('str')}" class="invalid-feedback" th:errors="*{str}">Incorrect value</div>
+            <label for="file">Файл (XLSX в кодировке UTF-8)</label>
+            <input type="file" name="file" class="form-control" th:classappend="${#fields.hasErrors('file')} ? 'is-invalid' : ''" id="file" th:field="*{file}"/>
+            <div th:if="${#fields.hasErrors('file')}" class="invalid-feedback" th:errors="*{file}">Incorrect value</div>
+        </div>
+
+        <div class="form-group">
+            <label for="filter">Колонки, которые нужно шифровать</label>
+            <input type="text" class="form-control" th:classappend="${#fields.hasErrors('filter')} ? 'is-invalid' : ''" id="filter" th:field="*{filter}" />
+            <div th:if="${#fields.hasErrors('filter')}" class="invalid-feedback" th:errors="*{filter}">Incorrect value</div>
         </div>
 
         <button type="submit" class="btn btn-primary mb-2">Run encryption</button>

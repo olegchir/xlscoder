@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -22,7 +23,7 @@ public class XLFile {
     /**
      * https://stackoverflow.com/questions/5673260/downloading-a-file-from-spring-controllers
      */
-    public static boolean sendAndProcess(ProcessingType processingType, boolean verification, Key key, MultipartFile src, HttpServletResponse dst, List<String> desiredColumnNames) throws IOException {
+    public static boolean sendAndProcess(ProcessingType processingType, boolean verification, Key key, MultipartFile src, HttpServletResponse response, List<String> desiredColumnNames) throws IOException {
         boolean result = false;
         try (InputStream inputStream = src.getInputStream()) {
             Workbook wb = WorkbookFactory.create(inputStream);
@@ -32,8 +33,17 @@ public class XLFile {
             } else if (processingType == ProcessingType.DECRYPT) {
                 decryptColumns(verification, key, sheet, desiredColumnNames);
             }
-            wb.write(dst.getOutputStream());
-            dst.flushBuffer();
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            wb.write(baos);
+
+            response.setContentType("mimetype:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setContentLength(baos.size());
+            response.setHeader("Content-Disposition", String.format("inline; filename=\"encrypted-" + src.getOriginalFilename() +"\""));
+
+            baos.writeTo(response.getOutputStream());
+            response.flushBuffer();
+
             return true;
         }
     }
@@ -52,6 +62,10 @@ public class XLFile {
 
     public static void encryptColumn(boolean verification, Key key, Sheet sheet, String desiredColumnName) {
         XLSet cellSet = XLSet.extractColumn(sheet, desiredColumnName);
+        if (null == cellSet) {
+            logger.error(String.format("Column \"%s\" was not found", desiredColumnName));
+            return;
+        }
 
         logger.info("Hashing");
 
@@ -85,6 +99,10 @@ public class XLFile {
 
     public static void decryptColumn(boolean verification, Key key, Sheet sheet, String desiredColumnName) {
         XLSet cellSet = XLSet.extractColumn(sheet, desiredColumnName);
+        if (null == cellSet) {
+            logger.error(String.format("Column \"%s\" was not found", desiredColumnName));
+            return;
+        }
 
         logger.info("Decrypting");
 
