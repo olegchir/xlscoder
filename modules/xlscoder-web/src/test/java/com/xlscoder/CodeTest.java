@@ -84,13 +84,13 @@ public class CodeTest {
             assertTrue(CollectionUtils.isEqualCollection(values, desiredColumnValues));
 
             XLFile.encryptColumns(false, testKey, sheet, "NAME", "PHONE");
-            saveWorkbookAndShow(wb, prefix + "dest2.xlsx");
+            saveWorkbookAndShow(wb, "dest2.xlsx");
 
             XLFile.decryptColumns(false, testKey, sheet, "NAME", "PHONE");
-            saveWorkbookAndShow(wb, prefix + "dest3.xlsx");
+            saveWorkbookAndShow(wb, "dest3.xlsx");
 
             XLFile.encryptColumns(false, testKey, sheet, "NAME", "PHONE");
-            saveWorkbookAndShow(wb, prefix + "dest4.xlsx");
+            saveWorkbookAndShow(wb, "dest4.xlsx");
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -107,6 +107,25 @@ public class CodeTest {
         });
     }
 
+    @Test
+    public void testJoker() {
+        withXLS("joker-utf.xlsx", wb -> {
+            XLFile.encryptColumns(false, testKey, wb.getSheetAt(0),
+                    "Как вас зовут? (Имя Фамилия)");
+            saveWorkbookAndShow(wb, "joker-new.xlsx");
+        });
+    }
+
+    @Test
+    public void testJoker2() {
+        withXLS("joker-new.xlsx", wb -> {
+            XLFile.decryptColumns(false, testKey, wb.getSheetAt(0),
+                    "Как вас зовут? (Имя Фамилия)");
+            saveWorkbookAndShow(wb, "joker-new2.xlsx");
+        });
+    }
+
+
     public void withXLS(String filename, Consumer<Workbook> consumer) {
         String prefix = "Z:\\temp\\";
         try(InputStream inputStream = new FileInputStream(new File(prefix + filename))) {
@@ -118,6 +137,8 @@ public class CodeTest {
     }
 
     public void saveWorkbookAndShow(Workbook wb, String newFilename) {
+        String prefix = "Z:\\temp\\";
+        newFilename = prefix + newFilename;
         try {
             File fileToDelete = FileUtils.getFile(newFilename);
             FileUtils.deleteQuietly(fileToDelete);

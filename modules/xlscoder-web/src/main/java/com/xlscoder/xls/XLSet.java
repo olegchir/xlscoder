@@ -43,8 +43,17 @@ public class XLSet {
     public void replaceOrAppend(boolean verification, boolean inPlace, boolean processHeaderWithMainProcessor, Function<Cell, String> headerProcessor, Function<Cell, String> processor) {
         int lastCellNum = -1;
 
+        int blockSize = 0;
+        int blockSizeLimit = 10;
+
         for (int counter = 0; counter < items.size(); counter++) {
             Cell item = items.get(counter);
+
+            blockSize++;
+            if (blockSize == blockSizeLimit) {
+                blockSize = 0;
+                logger.info(String.format("Processing %d item of %d", counter, items.size()));
+            }
 
             // Process header
 
