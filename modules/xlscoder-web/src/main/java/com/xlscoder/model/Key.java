@@ -43,12 +43,19 @@ public class Key {
     @Column(name = "SHASalt", length = DEFAULT_KEY_LENGTH, nullable = false)
     private String shaSalt;
 
+    @Column(name = "pgpPassword", length = DEFAULT_KEY_LENGTH, nullable = false)
+    private String pgpPassword;
+
+    @Column(name = "pgpIdentity", length = DEFAULT_KEY_LENGTH, nullable = false)
+    private String pgpIdentity;
+
+
     public String getShortPrivateKey() {
-        return KeyPairHolder.firstNOfKey(privateKey, 50);
+        return KeyPairHolder.firstNOfKey(privateKey, 10);
     }
 
     public String getShortPublicKey() {
-        return KeyPairHolder.firstNOfKey(publicKey, 50);
+        return KeyPairHolder.firstNOfKey(publicKey, 10);
     }
 
     public Long getId() {
@@ -113,5 +120,21 @@ public class Key {
 
     public void setShaSalt(String shaSalt) {
         this.shaSalt = shaSalt;
+    }
+
+    public String getPgpPassword() {
+        return pgpPassword;
+    }
+
+    public void setPgpPassword(String pgpPassword) {
+        this.pgpPassword = pgpPassword;
+    }
+
+    public String getPgpIdentity() {
+        return pgpIdentity;
+    }
+
+    public void setPgpIdentity(String pgpIdentity) {
+        this.pgpIdentity = pgpIdentity;
     }
 }

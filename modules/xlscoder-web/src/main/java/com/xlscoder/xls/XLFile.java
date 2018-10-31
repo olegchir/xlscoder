@@ -3,7 +3,6 @@ package com.xlscoder.xls;
 import com.xlscoder.coder.HashHelper;
 import com.xlscoder.coder.PGPUtility;
 import com.xlscoder.model.Key;
-import org.apache.commons.io.IOUtils;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
@@ -12,7 +11,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.List;
 
 import static com.xlscoder.lang.Functional.le;

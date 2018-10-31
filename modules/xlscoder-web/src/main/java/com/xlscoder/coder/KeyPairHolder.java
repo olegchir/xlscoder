@@ -27,13 +27,17 @@ public class KeyPairHolder {
     private String pgpPrivateKey;
     private String pgpPublicKey;
     private String shaSalt;
+    private String pgpPassword;
+    private String pgpIdentity;
 
-    public KeyPairHolder(byte[] privateSrc, byte[] publicSrc, byte[] pgpPrivateSrc, byte[] pgpPublicSrc, String shaSalt) {
+    public KeyPairHolder(byte[] privateSrc, byte[] publicSrc, byte[] pgpPrivateSrc, byte[] pgpPublicSrc, String pgpPassword, String pgpIdentity, String shaSalt) {
         this.publicKey = base64encode(publicSrc);
         this.privateKey = base64encode(privateSrc);
         this.pgpPrivateKey = base64encode(pgpPrivateSrc);
         this.pgpPublicKey = base64encode(pgpPublicSrc);
         this.shaSalt = shaSalt;
+        this.setPgpIdentity(pgpIdentity);
+        this.setPgpPassword(pgpPassword);
     }
 
     private String encodedToPrivateText(byte[] src) {
@@ -97,5 +101,21 @@ public class KeyPairHolder {
 
     public void setShaSalt(String shaSalt) {
         this.shaSalt = shaSalt;
+    }
+
+    public String getPgpPassword() {
+        return pgpPassword;
+    }
+
+    public void setPgpPassword(String pgpPassword) {
+        this.pgpPassword = pgpPassword;
+    }
+
+    public String getPgpIdentity() {
+        return pgpIdentity;
+    }
+
+    public void setPgpIdentity(String pgpIdentity) {
+        this.pgpIdentity = pgpIdentity;
     }
 }

@@ -38,34 +38,52 @@
             <div th:if="${#fields.hasErrors('keyName')}" class="invalid-feedback" th:errors="*{keyName}">Incorrect value</div>
         </div>
 
+        <hr/>
+        <h6>Ключи, важные для шифрования и расшифровки</h6><br/>
+
         <div class="form-group">
-            <label for="privateKey">Private</label>
-            <textarea type="text" class="form-control" th:classappend="${#fields.hasErrors('privateKey')} ? 'is-invalid' : ''" id="privateKey" th:field="*{privateKey}"></textarea>
-            <div th:if="${#fields.hasErrors('privateKey')}" class="invalid-feedback" th:errors="*{privateKey}">Incorrect value</div>
+            <label for="shaSalt">SHA Salt (используется для создания повторяемого хэша и его проверки)</label>
+            <textarea type="text" class="form-control" th:classappend="${#fields.hasErrors('shaSalt')} ? 'is-invalid' : ''" id="shaSalt" th:field="*{shaSalt}"></textarea>
+            <div th:if="${#fields.hasErrors('shaSalt')}" class="invalid-feedback" th:errors="*{shaSalt}">Incorrect value</div>
         </div>
 
         <div class="form-group">
-            <label for="publicKey">Public</label>
-            <textarea type="text" class="form-control" th:classappend="${#fields.hasErrors('publicKey')} ? 'is-invalid' : ''" id="publicKey" th:field="*{publicKey}"></textarea>
-            <div th:if="${#fields.hasErrors('publicKey')}" class="invalid-feedback" th:errors="*{publicKey}">Incorrect value</div>
+            <label for="pgpPassword">PGP Password (используется при расшифровке)</label>
+            <textarea type="text" class="form-control" th:classappend="${#fields.hasErrors('pgpPassword')} ? 'is-invalid' : ''" id="pgpPassword" th:field="*{pgpPassword}"></textarea>
+            <div th:if="${#fields.hasErrors('pgpPassword')}" class="invalid-feedback" th:errors="*{pgpPassword}">Incorrect value</div>
         </div>
 
         <div class="form-group">
-            <label for="pgpPrivateKey">PGP Private</label>
+            <label for="pgpPrivateKey">PGP Private (используется при расшифровке)</label>
             <textarea type="text" class="form-control" th:classappend="${#fields.hasErrors('pgpPrivateKey')} ? 'is-invalid' : ''" id="pgpPrivateKey" th:field="*{pgpPrivateKey}"></textarea>
             <div th:if="${#fields.hasErrors('pgpPrivateKey')}" class="invalid-feedback" th:errors="*{pgpPrivateKey}">Incorrect value</div>
         </div>
 
         <div class="form-group">
-            <label for="pgpPublicKey">PGP Public</label>
+            <label for="pgpPublicKey">PGP Public (используется для шифрования)</label>
             <textarea type="text" class="form-control" th:classappend="${#fields.hasErrors('pgpPublicKey')} ? 'is-invalid' : ''" id="pgpPublicKey" th:field="*{pgpPublicKey}"></textarea>
             <div th:if="${#fields.hasErrors('pgpPublicKey')}" class="invalid-feedback" th:errors="*{pgpPublicKey}">Incorrect value</div>
         </div>
 
+        <hr/>
+        <h6>Служебная информация: не используется напрямую, но иногда полезна</h6><br/>
+
         <div class="form-group">
-            <label for="shaSalt">SHA Salt</label>
-            <textarea type="text" class="form-control" th:classappend="${#fields.hasErrors('shaSalt')} ? 'is-invalid' : ''" id="shaSalt" th:field="*{shaSalt}"></textarea>
-            <div th:if="${#fields.hasErrors('shaSalt')}" class="invalid-feedback" th:errors="*{shaSalt}">Incorrect value</div>
+            <label for="pgpIdentity">PGP Identity (использовалось для генерации PGP)</label>
+            <textarea type="text" class="form-control" th:classappend="${#fields.hasErrors('pgpIdentity')} ? 'is-invalid' : ''" id="pgpIdentity" th:field="*{pgpIdentity}"></textarea>
+            <div th:if="${#fields.hasErrors('pgpIdentity')}" class="invalid-feedback" th:errors="*{pgpIdentity}">Incorrect value</div>
+        </div>
+
+        <div class="form-group">
+            <label for="privateKey">RSA Private (использовалось для генерации PGP)</label>
+            <textarea type="text" class="form-control" th:classappend="${#fields.hasErrors('privateKey')} ? 'is-invalid' : ''" id="privateKey" th:field="*{privateKey}"></textarea>
+            <div th:if="${#fields.hasErrors('privateKey')}" class="invalid-feedback" th:errors="*{privateKey}">Incorrect value</div>
+        </div>
+
+        <div class="form-group">
+            <label for="publicKey">RSA Public (использовалось для генерации PGP)</label>
+            <textarea type="text" class="form-control" th:classappend="${#fields.hasErrors('publicKey')} ? 'is-invalid' : ''" id="publicKey" th:field="*{publicKey}"></textarea>
+            <div th:if="${#fields.hasErrors('publicKey')}" class="invalid-feedback" th:errors="*{publicKey}">Incorrect value</div>
         </div>
 
         <button type="submit" class="btn btn-primary mb-2">Submit</button>

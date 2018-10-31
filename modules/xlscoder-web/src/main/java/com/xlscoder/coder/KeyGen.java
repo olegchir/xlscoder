@@ -19,8 +19,6 @@ import java.util.Date;
 
 public class KeyGen {
     public static final int DEFAULT_KEY_SIZE = 2048;
-    public static final String IDENTITY = "xlscoder";
-    public static final String PASSWORD = "xlscoder";
     public static final String DEFAULT_CRYPTO_PROVIDER = "BC";
 
     public static KeyPairHolder generatePairs() throws NoSuchAlgorithmException, NoSuchProviderException, PGPException, IOException {
@@ -29,19 +27,21 @@ public class KeyGen {
         generator.initialize(DEFAULT_KEY_SIZE);
         KeyPair keyPair = generator.generateKeyPair();
 
-        Pair<byte[], byte[]> pgpKeys = getPgpKeys(keyPair.getPrivate(), keyPair.getPublic(), IDENTITY, PASSWORD.toCharArray());
-
         RandomStringGenerator randomStringGenerator =
                 new RandomStringGenerator.Builder()
                         .withinRange('0', 'z')
                         .filteredBy(CharacterPredicates.LETTERS, CharacterPredicates.DIGITS)
                         .build();
         String shaSalt = randomStringGenerator.generate(12);
+        String pgpPassword = "pwd_" + randomStringGenerator.generate(12);
+        String pgpIdentity = "ident_" + randomStringGenerator.generate(12);
+
+        Pair<byte[], byte[]> pgpKeys = getPgpKeys(keyPair.getPrivate(), keyPair.getPublic(), pgpIdentity, pgpPassword.toCharArray());
 
         KeyPairHolder keyPairHolder = new KeyPairHolder(
                 keyPair.getPrivate().getEncoded(),
                 keyPair.getPublic().getEncoded(),
-                pgpKeys.first, pgpKeys.second,
+                pgpKeys.first, pgpKeys.second, pgpPassword, pgpIdentity,
                 shaSalt);
 
         return keyPairHolder;
@@ -64,10 +64,5 @@ public class KeyGen {
                         .build(password));
 
         return new Pair<>(pgpSecretKey.getEncoded(), pgpSecretKey.getPublicKey().getEncoded());
-    }
-
-    private KeyPair generatePairFromStrings() throws NoSuchAlgorithmException {
-        KeyFactory kf = KeyFactory.getInstance("RSA");
-        return null;
     }
 }

@@ -29,6 +29,10 @@ public class KeyValidator implements Validator {
         ValidationUtils.rejectIfEmpty(errors, "keyName", "NotEmpty");
 
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "privateKey", "NotEmpty");
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "publicKey", "NotEmpty");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "pgpPrivateKey", "NotEmpty");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "pgpPublicKey", "NotEmpty");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "pgpPassword", "NotEmpty");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "pgpIdentity", "NotEmpty");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "shaSalt", "NotEmpty");
     }
 }

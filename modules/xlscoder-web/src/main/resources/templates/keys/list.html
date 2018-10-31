@@ -21,6 +21,8 @@
                     <td th:text="${key.keyName}"></td>
                     <td th:text="${key.shortPrivateKey}"></td>
                     <td th:text="${key.shortPublicKey}"></td>
+                    <td th:text="${key.pgpPassword}"></td>
+                    <td th:text="${key.pgpIdentity}"></td>
                     <td th:text="${key.shaSalt}"></td>
                     <td style="white-space: nowrap;"><a th:href="${'/keys/edit/' + key.id}" class="btn btn-default">Edit</a>
                     <a th:href="${'/keys/delete/' + key.id}" class="btn btn-danger">Delete</a></td>
