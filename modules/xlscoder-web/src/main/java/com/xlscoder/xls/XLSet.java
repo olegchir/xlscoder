@@ -10,9 +10,11 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 import static com.xlscoder.xls.XLSHelper.getCellAt;
+import static com.xlscoder.xls.XLSHelper.getUniversalValue;
 
 public class XLSet {
     public static final Logger logger = LoggerFactory.getLogger(XLSet.class);
@@ -38,7 +40,7 @@ public class XLSet {
     }
 
 
-    public void replaceOrAppend(boolean inPlace, boolean processHeaderWithMainProcessor, Function<Cell, String> headerProcessor, Function<Cell, String> processor) {
+    public void replaceOrAppend(boolean verification, boolean inPlace, boolean processHeaderWithMainProcessor, Function<Cell, String> headerProcessor, Function<Cell, String> processor) {
         int lastCellNum = -1;
 
         for (int counter = 0; counter < items.size(); counter++) {
@@ -56,8 +58,10 @@ public class XLSet {
                     int oldPosition = existingHeaderPosition(row, newHeaderValue);
                     lastCellNum = oldPosition > 0 ? oldPosition : row.getLastCellNum();
 
-                    row.createCell(lastCellNum, CellType.STRING);
-                    row.getCell(lastCellNum).setCellValue(newHeaderValue);
+                    if (!verification) {
+                        row.createCell(lastCellNum, CellType.STRING);
+                        row.getCell(lastCellNum).setCellValue(newHeaderValue);
+                    }
                 }
                 continue;
             }
@@ -77,8 +81,17 @@ public class XLSet {
                     lastCellNum = oldPosition > 0 ? oldPosition : row.getLastCellNum();
                 }
 
-                row.createCell(lastCellNum, CellType.STRING);
-                row.getCell(lastCellNum).setCellValue(newValue);
+                if (!verification) {
+                    row.createCell(lastCellNum, CellType.STRING);
+                    row.getCell(lastCellNum).setCellValue(newValue);
+                } else {
+                    if (0 != counter) {
+                        String currentValue = getUniversalValue(row.getCell(lastCellNum)).orElse("");
+                        if (!StringUtils.equals(currentValue, newValue)) {
+                            throw new VerificationException(String.format("For field \"%s\" hash should be \"%s\", not \"%s\"", item.getStringCellValue(), newValue, currentValue));
+                        }
+                    }
+                }
             }
         }
     }

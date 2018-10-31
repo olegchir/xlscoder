@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import java.io.*;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
@@ -82,27 +83,51 @@ public class CodeTest {
                     .collect(Collectors.toList());
             assertTrue(CollectionUtils.isEqualCollection(values, desiredColumnValues));
 
-            XLFile.encryptColumns(testKey, sheet, "NAME", "PHONE");
+            XLFile.encryptColumns(false, testKey, sheet, "NAME", "PHONE");
             saveWorkbookAndShow(wb, prefix + "dest2.xlsx");
 
-            XLFile.decryptColumns(testKey, sheet, "NAME", "PHONE");
+            XLFile.decryptColumns(false, testKey, sheet, "NAME", "PHONE");
             saveWorkbookAndShow(wb, prefix + "dest3.xlsx");
 
-            XLFile.encryptColumns(testKey, sheet, "NAME", "PHONE");
+            XLFile.encryptColumns(false, testKey, sheet, "NAME", "PHONE");
             saveWorkbookAndShow(wb, prefix + "dest4.xlsx");
 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+
+        withXLS("dest3bad.xlsx", wb -> {
+            XLFile.encryptColumns(true, testKey, wb.getSheetAt(0), "NAME", "PHONE");
+            saveWorkbookAndShow(wb, prefix + "dest3new.xlsx");
+        });
+
+        withXLS("dest4bad.xlsx", wb -> {
+            XLFile.decryptColumns(true, testKey, wb.getSheetAt(0), "NAME", "PHONE");
+            saveWorkbookAndShow(wb, prefix + "dest4new.xlsx");
+        });
     }
 
-    public void saveWorkbookAndShow(Workbook wb, String newFilename) throws IOException {
-        File fileToDelete = FileUtils.getFile(newFilename);
-        FileUtils.deleteQuietly(fileToDelete);
-        try (FileOutputStream fis = new FileOutputStream(newFilename)) {
-            wb.write(fis);
+    public void withXLS(String filename, Consumer<Workbook> consumer) {
+        String prefix = "Z:\\temp\\";
+        try(InputStream inputStream = new FileInputStream(new File(prefix + filename))) {
+            Workbook wb = WorkbookFactory.create(inputStream);
+            consumer.accept(wb);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        Runtime.getRuntime().exec("cmd /c start excel.exe " + newFilename);
+    }
+
+    public void saveWorkbookAndShow(Workbook wb, String newFilename) {
+        try {
+            File fileToDelete = FileUtils.getFile(newFilename);
+            FileUtils.deleteQuietly(fileToDelete);
+            try (FileOutputStream fis = new FileOutputStream(newFilename)) {
+                wb.write(fis);
+            }
+            Runtime.getRuntime().exec("cmd /c start excel.exe " + newFilename);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
