@@ -62,15 +62,13 @@ public class CodeTest {
 
     @Test
     public void excelReadTest() throws Exception {
-        String filename = "Z:\\temp\\src.xlsx";
-        String newFilename = "Z:\\temp\\dest.xlsx";
-        String newFilename2 = "Z:\\temp\\dest2.xlsx";
+        String prefix = "Z:\\temp\\";
 
         List<String> colsToEnc = new ArrayList<>();
         colsToEnc.add("NAME");
         colsToEnc.add("PHONE");
 
-        try(InputStream inputStream = new FileInputStream(new File(filename))) {
+        try(InputStream inputStream = new FileInputStream(new File(prefix + "src.xlsx"))) {
             String desiredColumnName = "PHONE";
             List<String> desiredColumnValues = Arrays.asList("PHONE", "4", "5", "6");
 
@@ -85,10 +83,13 @@ public class CodeTest {
             assertTrue(CollectionUtils.isEqualCollection(values, desiredColumnValues));
 
             XLFile.encryptColumns(testKey, sheet, "NAME", "PHONE");
-            saveWorkbookAndShow(wb, newFilename);
+            saveWorkbookAndShow(wb, prefix + "dest2.xlsx");
 
             XLFile.decryptColumns(testKey, sheet, "NAME", "PHONE");
-            saveWorkbookAndShow(wb, newFilename2);
+            saveWorkbookAndShow(wb, prefix + "dest3.xlsx");
+
+            XLFile.encryptColumns(testKey, sheet, "NAME", "PHONE");
+            saveWorkbookAndShow(wb, prefix + "dest4.xlsx");
 
         } catch (Exception ex) {
             ex.printStackTrace();

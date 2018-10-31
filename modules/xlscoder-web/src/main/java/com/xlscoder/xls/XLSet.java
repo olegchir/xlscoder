@@ -21,9 +21,30 @@ public class XLSet {
     private XLSet() {
     }
 
+    public int existingHeaderPosition(Row row, String columnName) {
+        int foundRowIndex = -1;
+        for (int i = 0; i < row.getLastCellNum(); i++) {
+            Cell currCell = getCellAt(row, i);
+            if (null == currCell) {
+                logger.error(String.format("Missing cell in the XLS file. Bad sign! Coordinates: [%s,%s]. Occured while searching for column with name \"%s\"", row.getRowNum(), i, columnName));
+                continue;
+            }
+            String stringCellValue = currCell.getStringCellValue();
+            if (!StringUtils.isBlank(stringCellValue) && stringCellValue.equals(columnName)) {
+                foundRowIndex = i;
+            }
+        }
+        return foundRowIndex;
+    }
+
+
     public void replaceOrAppend(boolean inPlace, boolean processHeaderWithMainProcessor, Function<Cell, String> headerProcessor, Function<Cell, String> processor) {
+        int lastCellNum = -1;
+
         for (int counter = 0; counter < items.size(); counter++) {
             Cell item = items.get(counter);
+
+            // Process header
 
             if (null != headerProcessor && 0 == counter)  {
                 String newHeaderValue = headerProcessor.apply(item);
@@ -31,12 +52,17 @@ public class XLSet {
                     item.setCellValue(newHeaderValue);
                 } else {
                     Row row = item.getRow();
-                    short lastCellNum = row.getLastCellNum();
+
+                    int oldPosition = existingHeaderPosition(row, newHeaderValue);
+                    lastCellNum = oldPosition > 0 ? oldPosition : row.getLastCellNum();
+
                     row.createCell(lastCellNum, CellType.STRING);
                     row.getCell(lastCellNum).setCellValue(newHeaderValue);
                 }
                 continue;
             }
+
+            // Process body
 
             String newValue = processor.apply(item);
             if (inPlace) {
@@ -45,7 +71,12 @@ public class XLSet {
                 }
             } else {
                 Row row = item.getRow();
-                short lastCellNum = row.getLastCellNum();
+
+                if (0 == counter) {
+                    int oldPosition = existingHeaderPosition(row, newValue);
+                    lastCellNum = oldPosition > 0 ? oldPosition : row.getLastCellNum();
+                }
+
                 row.createCell(lastCellNum, CellType.STRING);
                 row.getCell(lastCellNum).setCellValue(newValue);
             }
