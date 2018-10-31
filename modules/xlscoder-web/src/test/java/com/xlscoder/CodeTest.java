@@ -1,7 +1,6 @@
 package com.xlscoder;
 
 import com.xlscoder.coder.HashHelper;
-import com.xlscoder.coder.KeyGen;
 import com.xlscoder.coder.PGPUtility;
 import com.xlscoder.model.Key;
 import com.xlscoder.xls.XLFile;
@@ -16,10 +15,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -58,7 +54,7 @@ public class CodeTest {
         assertNotEquals(1, union.size());
 
         // Check that decrypted text equals the source
-        String decResult = PGPUtility.decryptString(lastResult, testKey, testKey.getPgpPassword());
+        String decResult = PGPUtility.decryptString(lastResult, testKey);
         assertEquals(src, decResult);
 
         System.out.println(decResult);
@@ -68,6 +64,7 @@ public class CodeTest {
     public void excelReadTest() throws Exception {
         String filename = "Z:\\temp\\src.xlsx";
         String newFilename = "Z:\\temp\\dest.xlsx";
+        String newFilename2 = "Z:\\temp\\dest2.xlsx";
 
         List<String> colsToEnc = new ArrayList<>();
         colsToEnc.add("NAME");
@@ -87,22 +84,24 @@ public class CodeTest {
                     .collect(Collectors.toList());
             assertTrue(CollectionUtils.isEqualCollection(values, desiredColumnValues));
 
-            XLFile.encodeColumns(testKey, sheet, "NAME", "PHONE");
+            XLFile.encryptColumns(testKey, sheet, "NAME", "PHONE");
+            saveWorkbookAndShow(wb, newFilename);
 
-            File fileToDelete = FileUtils.getFile(newFilename);
-            FileUtils.deleteQuietly(fileToDelete);
-
-            try (FileOutputStream fis = new FileOutputStream(newFilename)) {
-                wb.write(fis);
-            }
-
-
-
-            Runtime.getRuntime().exec("cmd /c start excel.exe " + newFilename);
+            XLFile.decryptColumns(testKey, sheet, "NAME", "PHONE");
+            saveWorkbookAndShow(wb, newFilename2);
 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public void saveWorkbookAndShow(Workbook wb, String newFilename) throws IOException {
+        File fileToDelete = FileUtils.getFile(newFilename);
+        FileUtils.deleteQuietly(fileToDelete);
+        try (FileOutputStream fis = new FileOutputStream(newFilename)) {
+            wb.write(fis);
+        }
+        Runtime.getRuntime().exec("cmd /c start excel.exe " + newFilename);
     }
 
     @Test

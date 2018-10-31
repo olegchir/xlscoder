@@ -21,9 +21,9 @@ public class PGPUtility {
     public static final Date DEFAULT_DETERMINISTIC_DATE = new Date(1220227200L * 1000);
     public static final InsecureRandom DEFAULT_DETERMINISTIC_RANDOM = new InsecureRandom(new Byte("1"));
 
-    public static String decryptString(String src, Key key, String password) throws Exception {
+    public static String decryptString(String src, Key key) throws Exception {
         byte[] decPriv = Base64.getDecoder().decode(key.getPgpPrivateKey());
-        return decryptString(src, decPriv, password);
+        return decryptString(src, decPriv, key.getPgpPassword());
     }
 
     @SuppressWarnings("unchecked")
