@@ -59,6 +59,7 @@ public class KeyFrontController {
             return "keys/update";
         }
 
+        key.updateUserAssociations();
         keyRepository.save(key);
 
         return "redirect:/keys";
@@ -73,7 +74,8 @@ public class KeyFrontController {
     @RequestMapping(path = "/keys/edit/{id}", method = RequestMethod.GET)
     public String editKey(Model model, @PathVariable(value = "id") Long id) {
         model.addAttribute("allUsers", userRepository.findAll());
-        model.addAttribute("key", keyRepository.findOne(id));
+        Key key = keyRepository.findOne(id);
+        model.addAttribute("key", key);
         return "keys/update";
     }
 

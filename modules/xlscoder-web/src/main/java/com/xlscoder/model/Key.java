@@ -49,6 +49,21 @@ public class Key {
     @Column(name = "pgpIdentity", length = DEFAULT_KEY_LENGTH, nullable = false)
     private String pgpIdentity;
 
+    public void associateUser(User user) {
+        this.users.add(user);
+        user.getKeys().add(this);
+    }
+
+    public void disassociateUser(User user) {
+        this.users.add(user);
+        user.getKeys().remove(this);
+    }
+
+    public void updateUserAssociations() {
+        for (User user: this.users) {
+            associateUser(user);
+        }
+    }
 
     public String getShortPrivateKey() {
         return KeyPairHolder.firstNOfKey(privateKey, 10);
