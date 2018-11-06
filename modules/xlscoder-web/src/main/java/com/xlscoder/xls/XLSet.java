@@ -130,6 +130,10 @@ public class XLSet {
         int lastRowNum = sheet.getLastRowNum();
         for (int rowNum = 0; rowNum <= lastRowNum; rowNum++) {
             Cell currCell = getCellAt(sheet, rowNum, foundRowIndex);
+            if (null == currCell) {
+                //Probably an empty cell, that's normal
+                continue;
+            }
             that.getItems().add(currCell);
         }
 

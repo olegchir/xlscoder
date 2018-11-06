@@ -10,6 +10,11 @@ import java.util.Optional;
 public class XLSHelper {
 
     public static Optional<String> getUniversalValue(Cell cell) {
+        if (cell == null) {
+            //Probably an empty cell, that's normal
+            return Optional.of("");
+        }
+
         CellType cellType = cell.getCellTypeEnum();
         Optional<String> value = Optional.empty();
 
